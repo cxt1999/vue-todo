@@ -1,23 +1,24 @@
+<style src="todomvc-app-css/index.css"></style>
+
 <template>
-  <section class="container">
+  <section class="todoapp">
     <!-- header -->
-    <header class="header my-3">
-      <h1>Todos</h1>
-      <input class="form-control"
+    <header class="header">
+      <h1>todos</h1>
+      <input class="new-todo"
         autofocus
         autocomplete="off"
         placeholder="What needs to be done?"
         @keyup.enter="addTodo">
     </header>
-
     <!-- main section -->
     <section class="main" v-show="todos.length">
-      <input class="form-check-input me-1" id="toggle-all"
+      <input class="toggle-all" id="toggle-all"
         type="checkbox"
         :checked="allChecked"
         @change="toggleAll(!allChecked)">
-      <label for="toggle-all">Select All</label>
-      <ul class="list-group mt-2 ">
+      <label for="toggle-all"></label>
+      <ul class="todo-list">
         <TodoItem
           v-for="(todo, index) in filteredTodos"
           :key="index"
@@ -26,18 +27,19 @@
       </ul>
     </section>
     <!-- footer -->
-    <footer class="footer card p-2 mt-4" v-show="todos.length">
+    <footer class="footer" v-show="todos.length">
       <span class="todo-count">
         <strong>{{ remaining }}</strong>
         {{ pluralize(remaining, 'item') }} left
       </span>
-      <div class="btn-group list-inline">
-          <a :href="'#/' + key"  v-for="(val, key) in filters" :key="key"
-            :class="{ active: visibility === key }" class="btn btn-primary"
-            @click="visibility = key">{{ capitalize(key) }}
-          </a>
-      </div>
-      <button class="clear-completed btn btn-danger mt-2"
+      <ul class="filters">
+        <li v-for="(val, key) in filters">
+          <a :href="'#/' + key"
+            :class="{ selected: visibility === key }"
+            @click="visibility = key">{{ capitalize(key) }}</a>
+        </li>
+      </ul>
+      <button class="clear-completed"
         v-show="todos.length > remaining"
         @click="clearCompleted">
         Clear completed
@@ -48,7 +50,7 @@
 
 <script>
 import { mapActions } from 'vuex'
-import TodoItem from './components/TodoItem.vue'
+import TodoItem from './TodoItem.vue'
 
 const filters = {
   all: todos => todos,
@@ -61,7 +63,7 @@ export default {
   data () {
     return {
       visibility: 'all',
-      filters: filters,
+      filters: filters
     }
   },
   computed: {
@@ -84,8 +86,10 @@ export default {
       'clearCompleted'
     ]),
     addTodo (e) {
-      const text = e.target.value.trim()
-        this.$store.dispatch('addTodo', text);
+      const text = e.target.value
+      if (text.trim()) {
+        this.$store.dispatch('addTodo', text)
+      }
       e.target.value = ''
     },
     pluralize (n, w) {
@@ -97,4 +101,3 @@ export default {
   }
 }
 </script>
-
